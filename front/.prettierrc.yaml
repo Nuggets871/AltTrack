@@ -1,0 +1,15 @@
+trailingComma: 'es5'
+semi: true
+singleQuote: true
+arrowParens: 'always'
+bracketSpacing: true
+bracketSameLine: true
+plugins:
+  - prettier-plugin-organize-imports
+  - prettier-plugin-organize-attributes
+  - prettier-plugin-sh
+overrides:
+  - files: '*.html'
+    options:
+      attributeGroups: ['^#.+$', '^\*.+$', '$DEFAULT', '^\[\(.+\)\]$', '^\[.+\]$', '^\(.+\)$']
+      attributeSort: 'ASC'
