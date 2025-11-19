@@ -1,0 +1,93 @@
+<div class="min-h-screen flex items-center justify-center bg-base-200">
+  <div class="card w-full max-w-md bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title text-3xl font-bold text-center justify-center mb-6">
+        AltTrack
+      </h2>
+      <p class="text-center text-base-content/70 mb-6">
+        Connectez-vous à votre compte
+      </p>
+
+      @if (errorMessageSignal()) {
+        <div role="alert" class="alert alert-error mb-4">
+          <i class="lni lni-cross-circle text-xl"></i>
+          <span>{{ errorMessageSignal() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-control w-full mb-4">
+          <label class="label">
+            <span class="label-text">
+              <i class="lni lni-user mr-2"></i>
+              Nom d'utilisateur
+            </span>
+          </label>
+          <input
+            type="text"
+            placeholder="Entrez votre nom d'utilisateur"
+            class="input input-bordered w-full"
+            formControlName="username"
+            [class.input-error]="hasError('username')"
+          />
+          @if (hasError('username')) {
+            <label class="label">
+              <span class="label-text-alt text-error">{{ getErrorMessage('username') }}</span>
+            </label>
+          }
+        </div>
+
+        <div class="form-control w-full mb-6">
+          <label class="label">
+            <span class="label-text">
+              <i class="lni lni-lock mr-2"></i>
+              Mot de passe
+            </span>
+          </label>
+          <input
+            type="password"
+            placeholder="Entrez votre mot de passe"
+            class="input input-bordered w-full"
+            formControlName="password"
+            [class.input-error]="hasError('password')"
+          />
+          @if (hasError('password')) {
+            <label class="label">
+              <span class="label-text-alt text-error">{{ getErrorMessage('password') }}</span>
+            </label>
+          }
+        </div>
+
+        <div class="form-control mt-6">
+          <button
+            type="submit"
+            class="btn btn-primary w-full"
+            [disabled]="isLoadingSignal()">
+            @if (isLoadingSignal()) {
+              <span class="loading loading-spinner"></span>
+              Connexion en cours...
+            } @else {
+              <i class="lni lni-enter mr-2"></i>
+              Se connecter
+            }
+          </button>
+        </div>
+      </form>
+
+      <div class="divider">Pas encore de compte ?</div>
+
+      <div class="text-center">
+        <p class="text-base-content/70 mb-4">
+          Vous n'avez pas encore de compte ?
+        </p>
+        <a
+          routerLink="/register"
+          class="btn btn-outline btn-primary w-full">
+          <i class="lni lni-user text-lg"></i>
+          Créer un compte
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,101 @@
+<div class="min-h-screen flex items-center justify-center bg-base-200">
+  <div class="card w-full max-w-md bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title text-3xl font-bold text-center justify-center mb-6">
+        Inscription
+      </h2>
+
+      @if (errorMessage()) {
+        <div class="alert alert-error mb-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Nom d'utilisateur</span>
+          </label>
+          <input
+            type="text"
+            [value]="username()"
+            (input)="updateUsername($any($event.target).value)"
+            placeholder="Entrez votre nom d'utilisateur"
+            class="input input-bordered"
+            [disabled]="isLoading()"
+            required
+            minlength="3"
+            maxlength="50" />
+          <label class="label">
+            <span class="label-text-alt">Minimum 3 caractères, lettres, chiffres, - et _</span>
+          </label>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Mot de passe</span>
+          </label>
+          <input
+            type="password"
+            [value]="password()"
+            (input)="updatePassword($any($event.target).value)"
+            placeholder="Entrez votre mot de passe"
+            class="input input-bordered"
+            [disabled]="isLoading()"
+            required
+            minlength="4" />
+          <label class="label">
+            <span class="label-text-alt">Minimum 4 caractères</span>
+          </label>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Confirmer le mot de passe</span>
+          </label>
+          <input
+            type="password"
+            [value]="confirmPassword()"
+            (input)="updateConfirmPassword($any($event.target).value)"
+            placeholder="Confirmez votre mot de passe"
+            class="input input-bordered"
+            [disabled]="isLoading()"
+            required />
+        </div>
+
+        <div class="form-control mt-6">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isLoading()">
+            @if (isLoading()) {
+              <span class="loading loading-spinner"></span>
+            }
+            S'inscrire
+          </button>
+        </div>
+      </form>
+
+      <div class="divider">OU</div>
+
+      <div class="text-center">
+        <p class="text-sm">
+          Vous avez déjà un compte ?
+          <a routerLink="/login" class="link link-primary">Se connecter</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+

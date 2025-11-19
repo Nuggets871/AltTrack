@@ -26,8 +26,10 @@ daisyUI 5 provides class names for common UI components
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 ```
 5. A CSS file with Tailwind CSS and daisyUI looks like this (if it's a node dependency)
+
 ```css
-@import "tailwindcss";
+@import "../front/node_modules/tailwindcss";
+
 @plugin "daisyui";
 ```
 
