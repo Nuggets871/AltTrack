@@ -1,100 +1,138 @@
-<div class="min-h-screen flex items-center justify-center bg-base-200">
-  <div class="card w-full max-w-md bg-base-100 shadow-xl">
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-base-300 to-base-200 p-4">
+  <div class="card w-full max-w-md bg-base-100 shadow-2xl border border-base-300">
     <div class="card-body">
-      <h2 class="card-title text-3xl font-bold text-center justify-center mb-6">
-        Inscription
-      </h2>
+      <div class="text-center mb-8">
+        <h2 class="card-title text-4xl font-bold justify-center text-primary mb-2">
+          Inscription
+        </h2>
+        <p class="text-base-content/60 text-sm">
+          Créez votre compte AltTrack
+        </p>
+      </div>
 
       @if (errorMessage()) {
-        <div class="alert alert-error mb-4">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="stroke-current shrink-0 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>{{ errorMessage() }}</span>
+        <div role="alert" class="alert alert-error mb-6 gap-3">
+          <i class="lni lni-circle-check text-lg"></i>
+          <span class="text-sm">{{ errorMessage() }}</span>
         </div>
       }
 
-      <form (ngSubmit)="onSubmit()">
+      <form (ngSubmit)="onSubmit()" class="space-y-5">
         <div class="form-control">
-          <label class="label">
-            <span class="label-text">Nom d'utilisateur</span>
+          <label class="label pb-2">
+            <span class="label-text font-medium text-base-content">
+              Nom d'utilisateur
+            </span>
           </label>
-          <input
-            type="text"
-            [value]="username()"
-            (input)="updateUsername($any($event.target).value)"
-            placeholder="Entrez votre nom d'utilisateur"
-            class="input input-bordered"
-            [disabled]="isLoading()"
-            required
-            minlength="3"
-            maxlength="50" />
-          <label class="label">
-            <span class="label-text-alt">Minimum 3 caractères, lettres, chiffres, - et _</span>
-          </label>
+          <div class="relative">
+            <span class="absolute left-0 top-0 bottom-0 flex items-center pl-3 text-base-content/50 z-10 pointer-events-none">
+              <i class="lni lni-user-4 text-lg"></i>
+            </span>
+            <input
+              type="text"
+              [value]="username()"
+              (input)="updateUsername($any($event.target).value)"
+              placeholder="Entrez votre nom d'utilisateur"
+              class="input input-bordered w-full pl-10 focus:input-primary transition-all"
+              [class.input-error]="!usernameValidation().isValid && username() !== ''"
+              [disabled]="isLoading()"
+              maxlength="50"
+            />
+          </div>
+          @if (!usernameValidation().isValid && username() !== '') {
+            <div aria-label="status" class="label pt-2">
+              <span class="label-text-alt text-error text-xs inline-flex items-center gap-1.5">
+                <span class="status status-error status-sm"></span>
+                {{ usernameValidation().message }}
+              </span>
+            </div>
+          }
         </div>
 
         <div class="form-control">
-          <label class="label">
-            <span class="label-text">Mot de passe</span>
+          <label class="label pb-2">
+            <span class="label-text font-medium text-base-content">
+              Mot de passe
+            </span>
           </label>
-          <input
-            type="password"
-            [value]="password()"
-            (input)="updatePassword($any($event.target).value)"
-            placeholder="Entrez votre mot de passe"
-            class="input input-bordered"
-            [disabled]="isLoading()"
-            required
-            minlength="4" />
-          <label class="label">
-            <span class="label-text-alt">Minimum 4 caractères</span>
-          </label>
+          <div class="relative">
+            <span class="absolute left-0 top-0 bottom-0 flex items-center pl-3 text-base-content/50 z-10 pointer-events-none">
+              <i class="lni lni-locked-2 text-lg"></i>
+            </span>
+            <input
+              type="password"
+              [value]="password()"
+              (input)="updatePassword($any($event.target).value)"
+              placeholder="Entrez votre mot de passe"
+              class="input input-bordered w-full pl-10 focus:input-primary transition-all"
+              [class.input-error]="!passwordValidation().isValid && password() !== ''"
+              [disabled]="isLoading()"
+            />
+          </div>
+          @if (!passwordValidation().isValid && password() !== '') {
+            <div aria-label="status" class="label pt-2">
+              <span class="label-text-alt text-error text-xs inline-flex items-center gap-1.5">
+                <span class="status status-error status-sm"></span>
+                {{ passwordValidation().message }}
+              </span>
+            </div>
+          }
         </div>
 
         <div class="form-control">
-          <label class="label">
-            <span class="label-text">Confirmer le mot de passe</span>
+          <label class="label pb-2">
+            <span class="label-text font-medium text-base-content">
+              Confirmer le mot de passe
+            </span>
           </label>
-          <input
-            type="password"
-            [value]="confirmPassword()"
-            (input)="updateConfirmPassword($any($event.target).value)"
-            placeholder="Confirmez votre mot de passe"
-            class="input input-bordered"
-            [disabled]="isLoading()"
-            required />
+          <div class="relative">
+            <span class="absolute left-0 top-0 bottom-0 flex items-center pl-3 text-base-content/50 z-10 pointer-events-none">
+              <i class="lni lni-locked-2 text-lg"></i>
+            </span>
+            <input
+              type="password"
+              [value]="confirmPassword()"
+              (input)="updateConfirmPassword($any($event.target).value)"
+              placeholder="Confirmez votre mot de passe"
+              class="input input-bordered w-full pl-10 focus:input-primary transition-all"
+              [class.input-error]="!confirmPasswordValidation().isValid && confirmPassword() !== ''"
+              [disabled]="isLoading()"
+            />
+          </div>
+          @if (!confirmPasswordValidation().isValid && confirmPassword() !== '') {
+            <div aria-label="status" class="label pt-2">
+              <span class="label-text-alt text-error text-xs inline-flex items-center gap-1.5">
+                <span class="status status-error status-sm"></span>
+                {{ confirmPasswordValidation().message }}
+              </span>
+            </div>
+          }
         </div>
 
-        <div class="form-control mt-6">
+        <div class="form-control mt-8">
           <button
             type="submit"
-            class="btn btn-primary"
+            class="btn btn-primary w-full gap-2 font-semibold"
             [disabled]="isLoading()">
             @if (isLoading()) {
-              <span class="loading loading-spinner"></span>
+              <span class="loading loading-spinner loading-sm"></span>
+              <span>Inscription en cours...</span>
+            } @else {
+              <i class="lni lni-user-add text-lg"></i>
+              <span>S'inscrire</span>
             }
-            S'inscrire
           </button>
         </div>
       </form>
 
-      <div class="divider">OU</div>
+      <div class="divider text-xs text-base-content/50 my-6">ou se connecter</div>
 
-      <div class="text-center">
-        <p class="text-sm">
-          Vous avez déjà un compte ?
-          <a routerLink="/login" class="link link-primary">Se connecter</a>
-        </p>
-      </div>
+      <a
+        routerLink="/login"
+        class="btn btn-outline btn-primary w-full gap-2 font-medium transition-all hover:bg-primary/10">
+        <i class="lni lni-arrow-left text-lg"></i>
+        Se connecter
+      </a>
     </div>
   </div>
 </div>

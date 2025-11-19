@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -16,25 +16,69 @@ export class RegisterComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  username = signal<string>('');
-  password = signal<string>('');
-  confirmPassword = signal<string>('');
-  errorMessage = signal<string>('');
-  isLoading = signal<boolean>(false);
+  protected readonly username = signal<string>('');
+  protected readonly password = signal<string>('');
+  protected readonly confirmPassword = signal<string>('');
+  protected readonly errorMessage = signal<string>('');
+  protected readonly isLoading = signal<boolean>(false);
 
-  updateUsername(value: string): void {
+  protected readonly usernameValidation = computed(() => this.computeUsernameValidation());
+  protected readonly passwordValidation = computed(() => this.computePasswordValidation());
+  protected readonly confirmPasswordValidation = computed(() => this.computeConfirmPasswordValidation());
+
+  protected updateUsername(value: string): void {
     this.username.set(value);
   }
 
-  updatePassword(value: string): void {
+  protected updatePassword(value: string): void {
     this.password.set(value);
   }
 
-  updateConfirmPassword(value: string): void {
+  protected updateConfirmPassword(value: string): void {
     this.confirmPassword.set(value);
   }
 
-  onSubmit(): void {
+  private computeUsernameValidation(): { isValid: boolean; message: string } {
+    const val = this.username();
+    if (!val) return { isValid: true, message: '' };
+
+    if (val.length < 3) {
+      return { isValid: false, message: 'Minimum 3 caractères requis' };
+    }
+
+    const regex = /^[a-zA-Z0-9_-]+$/;
+    if (!regex.test(val)) {
+      return { isValid: false, message: 'Lettres, chiffres, tirets et underscores uniquement' };
+    }
+
+    return { isValid: true, message: '' };
+  }
+
+  private computePasswordValidation(): { isValid: boolean; message: string } {
+    const val = this.password();
+    if (!val) return { isValid: true, message: '' };
+
+    if (val.length < 4) {
+      return { isValid: false, message: 'Minimum 4 caractères requis' };
+    }
+
+    return { isValid: true, message: '' };
+  }
+
+  private computeConfirmPasswordValidation(): { isValid: boolean; message: string } {
+    const pwd = this.password();
+    const confirmed = this.confirmPassword();
+
+    if (!confirmed) return { isValid: true, message: '' };
+
+    if (pwd !== confirmed) {
+      return { isValid: false, message: 'Les mots de passe ne correspondent pas' };
+    }
+
+    return { isValid: true, message: '' };
+  }
+
+  protected onSubmit(): void {
     this.errorMessage.set('');
 
     if (!this.username() || !this.password() || !this.confirmPassword()) {
@@ -42,24 +86,8 @@ export class RegisterComponent {
       return;
     }
 
-    if (this.username().length < 3) {
-      this.errorMessage.set('Le nom d\'utilisateur doit contenir au moins 3 caractères.');
-      return;
-    }
-
-    if (this.password().length < 4) {
-      this.errorMessage.set('Le mot de passe doit contenir au moins 4 caractères.');
-      return;
-    }
-
-    if (this.password() !== this.confirmPassword()) {
-      this.errorMessage.set('Les mots de passe ne correspondent pas.');
-      return;
-    }
-
-    const usernameRegex = /^[a-zA-Z0-9_-]+$/;
-    if (!usernameRegex.test(this.username())) {
-      this.errorMessage.set('Le nom d\'utilisateur ne peut contenir que des lettres, chiffres, tirets et underscores.');
+    if (!this.usernameValidation().isValid || !this.passwordValidation().isValid || !this.confirmPasswordValidation().isValid) {
+      this.errorMessage.set('Veuillez corriger les erreurs de validation.');
       return;
     }
 

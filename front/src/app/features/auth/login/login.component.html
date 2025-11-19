@@ -1,92 +1,103 @@
-<div class="min-h-screen flex items-center justify-center bg-base-200">
-  <div class="card w-full max-w-md bg-base-100 shadow-xl">
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-base-300 to-base-200 p-4">
+  <div class="card w-full max-w-md bg-base-100 shadow-2xl border border-base-300">
     <div class="card-body">
-      <h2 class="card-title text-3xl font-bold text-center justify-center mb-6">
-        AltTrack
-      </h2>
-      <p class="text-center text-base-content/70 mb-6">
-        Connectez-vous à votre compte
-      </p>
+      <div class="text-center mb-8">
+        <h2 class="card-title text-4xl font-bold justify-center text-primary mb-2">
+          AltTrack
+        </h2>
+        <p class="text-base-content/60 text-sm">
+          Connectez-vous à votre compte
+        </p>
+      </div>
 
       @if (errorMessageSignal()) {
-        <div role="alert" class="alert alert-error mb-4">
-          <i class="lni lni-cross-circle text-xl"></i>
-          <span>{{ errorMessageSignal() }}</span>
+        <div role="alert" class="alert alert-error mb-6 gap-3">
+          <i class="lni lni-circle-check text-lg"></i>
+          <span class="text-sm">{{ errorMessageSignal() }}</span>
         </div>
       }
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <div class="form-control w-full mb-4">
-          <label class="label">
-            <span class="label-text">
-              <i class="lni lni-user mr-2"></i>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+        <div class="form-control w-full">
+          <label class="label pb-2">
+            <span class="label-text font-medium text-base-content">
               Nom d'utilisateur
             </span>
           </label>
-          <input
-            type="text"
-            placeholder="Entrez votre nom d'utilisateur"
-            class="input input-bordered w-full"
-            formControlName="username"
-            [class.input-error]="hasError('username')"
-          />
+          <div class="relative">
+            <span class="absolute left-0 top-0 bottom-0 flex items-center pl-3 text-base-content/50 z-10 pointer-events-none">
+              <i class="lni lni-user-4 text-lg"></i>
+            </span>
+            <input
+              type="text"
+              placeholder="Entrez votre nom d'utilisateur"
+              class="input input-bordered w-full pl-10 focus:input-primary transition-all"
+              formControlName="username"
+              [class.input-error]="hasError('username')"
+            />
+          </div>
           @if (hasError('username')) {
-            <label class="label">
-              <span class="label-text-alt text-error">{{ getErrorMessage('username') }}</span>
+            <label class="label pt-2">
+              <span class="label-text-alt text-error text-xs inline-flex items-center gap-1.5">
+                <span class="status status-error status-sm"></span>
+                {{ getErrorMessage('username') }}
+              </span>
             </label>
           }
         </div>
 
-        <div class="form-control w-full mb-6">
-          <label class="label">
-            <span class="label-text">
-              <i class="lni lni-lock mr-2"></i>
+        <div class="form-control w-full">
+          <label class="label pb-2">
+            <span class="label-text font-medium text-base-content">
               Mot de passe
             </span>
           </label>
-          <input
-            type="password"
-            placeholder="Entrez votre mot de passe"
-            class="input input-bordered w-full"
-            formControlName="password"
-            [class.input-error]="hasError('password')"
-          />
+          <div class="relative">
+            <span class="absolute left-0 top-0 bottom-0 flex items-center pl-3 text-base-content/50 z-10 pointer-events-none">
+              <i class="lni lni-locked-2 text-lg"></i>
+            </span>
+            <input
+              type="password"
+              placeholder="Entrez votre mot de passe"
+              class="input input-bordered w-full pl-10 focus:input-primary transition-all"
+              formControlName="password"
+              [class.input-error]="hasError('password')"
+            />
+          </div>
           @if (hasError('password')) {
-            <label class="label">
-              <span class="label-text-alt text-error">{{ getErrorMessage('password') }}</span>
+            <label class="label pt-2">
+              <span class="label-text-alt text-error text-xs inline-flex items-center gap-1.5">
+                <span class="status status-error status-sm"></span>
+                {{ getErrorMessage('password') }}
+              </span>
             </label>
           }
         </div>
 
-        <div class="form-control mt-6">
+        <div class="form-control mt-8">
           <button
             type="submit"
-            class="btn btn-primary w-full"
+            class="btn btn-primary w-full gap-2 font-semibold"
             [disabled]="isLoadingSignal()">
             @if (isLoadingSignal()) {
-              <span class="loading loading-spinner"></span>
-              Connexion en cours...
+              <span class="loading loading-spinner loading-sm"></span>
+              <span>Connexion en cours...</span>
             } @else {
-              <i class="lni lni-enter mr-2"></i>
-              Se connecter
+              <i class="lni lni-arrow-right text-lg"></i>
+              <span>Se connecter</span>
             }
           </button>
         </div>
       </form>
 
-      <div class="divider">Pas encore de compte ?</div>
+      <div class="divider text-xs text-base-content/50 my-6">ou créer un compte</div>
 
-      <div class="text-center">
-        <p class="text-base-content/70 mb-4">
-          Vous n'avez pas encore de compte ?
-        </p>
-        <a
-          routerLink="/register"
-          class="btn btn-outline btn-primary w-full">
-          <i class="lni lni-user text-lg"></i>
-          Créer un compte
-        </a>
-      </div>
+      <a
+        routerLink="/register"
+        class="btn btn-outline btn-primary w-full gap-2 font-medium transition-all hover:bg-primary/10">
+        <i class="lni lni-user-add text-lg"></i>
+        Créer un compte
+      </a>
     </div>
   </div>
 </div>
