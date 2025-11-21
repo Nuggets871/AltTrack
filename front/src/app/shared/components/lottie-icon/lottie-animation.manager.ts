@@ -51,8 +51,15 @@ export class LottieAnimationManager {
     }
 
     Logger.debug(this.getContext(), 'Relecture de l\'animation');
+
+    this.animation.stop();
     this.animation.goToAndStop(0, true);
-    this.animation.play();
+
+    requestAnimationFrame(() => {
+      if (this.animation) {
+        this.animation.play();
+      }
+    });
   }
 
   destroy(): void {

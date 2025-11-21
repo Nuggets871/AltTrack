@@ -1,10 +1,19 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  Input,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  inject
+} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import lottie from 'lottie-web';
-import { LordiconService } from '@core/services/lordicon.service';
-import { Logger } from '@shared/utils/logger.util';
-import { LottieAnimationManager } from './lottie-animation.manager';
-import { DEFAULT_LOTTIE_CONFIG, LottieIconConfig } from './lottie-icon.config';
+import {LordiconService} from '@core/services/lordicon.service';
+import {Logger} from '@shared/utils/logger.util';
+import {LottieAnimationManager} from '@shared/components';
+import {DEFAULT_LOTTIE_CONFIG} from '@shared/components';
 
 @Component({
   selector: 'app-lottie-icon',
@@ -17,6 +26,7 @@ import { DEFAULT_LOTTIE_CONFIG, LottieIconConfig } from './lottie-icon.config';
     :host {
       display: inline-block;
     }
+
     .lottie-container {
       display: flex;
       align-items: center;
@@ -34,11 +44,12 @@ export class LottieIconComponent implements AfterViewInit, OnDestroy {
   @Input() loop: boolean = DEFAULT_LOTTIE_CONFIG.loop!;
   @Input() autoplay: boolean = DEFAULT_LOTTIE_CONFIG.autoplay!;
 
-  @ViewChild('container', { static: false }) containerRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('container', {static: false}) containerRef!: ElementRef<HTMLDivElement>;
 
   private readonly lordiconService = inject(LordiconService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly animationManager = new LottieAnimationManager();
+  private animationData: any = null;
 
   ngAfterViewInit(): void {
     Logger.debug(LottieIconComponent.CONTEXT, 'Initialisation du composant', {
@@ -95,6 +106,7 @@ export class LottieIconComponent implements AfterViewInit, OnDestroy {
   private onAnimationDataReceived(animationData: any): void {
     Logger.info(LottieIconComponent.CONTEXT, `Données d'animation reçues pour: ${this.iconName}`);
 
+    this.animationData = animationData;
     const container = this.containerRef.nativeElement;
 
     if (!this.isContainerReady(container)) {
@@ -164,7 +176,34 @@ export class LottieIconComponent implements AfterViewInit, OnDestroy {
   }
 
   replay(): void {
-    this.animationManager.replay();
+    if (!this.animationData) {
+      Logger.warn(LottieIconComponent.CONTEXT, 'Données d\'animation non disponibles');
+      return;
+    }
+
+    Logger.debug(LottieIconComponent.CONTEXT, `Replay de l'animation: ${this.iconName}`);
+
+    this.animationManager.destroy();
+    this.clearContainer();
+
+    const container = this.containerRef.nativeElement;
+
+    if (this.isContainerReady(container)) {
+      const animation = lottie.loadAnimation({
+        container,
+        renderer: 'svg',
+        loop: this.loop,
+        autoplay: true,
+        animationData: this.animationData,
+        rendererSettings: {
+          preserveAspectRatio: 'xMidYMid meet',
+          progressiveLoad: true,
+        }
+      });
+
+      this.animationManager.instance = animation;
+      this.cdr.markForCheck();
+    }
   }
 
   ngOnDestroy(): void {

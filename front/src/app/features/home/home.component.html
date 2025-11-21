@@ -3,12 +3,37 @@
     <div class="flex-1">
       <a class="btn btn-ghost text-xl">AltTrack</a>
     </div>
-    <div class="flex-none gap-2">
+    <div class="flex-none flex items-center gap-4">
+      <label class="flex cursor-pointer gap-2 items-center">
+        <app-lottie-icon
+          #sunIcon
+          iconName="sun"
+          [width]="32"
+          [height]="32"
+          [loop]="false"
+          [autoplay]="false"
+          class="cursor-pointer">
+        </app-lottie-icon>
+        <input
+          type="checkbox"
+          class="toggle toggle-sm theme-controller"
+          [checked]="isDarkMode()"
+          (change)="onThemeChange($event)" />
+        <app-lottie-icon
+          #moonIcon
+          iconName="moon"
+          [width]="32"
+          [height]="32"
+          [loop]="false"
+          [autoplay]="false"
+          class="cursor-pointer">
+        </app-lottie-icon>
+      </label>
       @if (authService.currentUser(); as user) {
         <div class="dropdown dropdown-end">
-          <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar placeholder">
-            <div class="bg-neutral text-neutral-content w-10 rounded-full">
-              <span class="text-xl">{{ user.username.charAt(0).toUpperCase() }}</span>
+          <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+            <div class="bg-neutral text-neutral-content w-10 rounded-full flex items-center justify-center">
+              <span class="text-lg font-semibold">{{ user.username.charAt(0).toUpperCase() }}</span>
             </div>
           </div>
           <ul

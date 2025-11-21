@@ -47,7 +47,7 @@ export class LoginComponent {
     const isDark = checkbox.checked;
     this.isDarkMode.set(isDark);
     this.applyTheme(isDark);
-    this.triggerLordiconAnimation();
+    this.triggerLordiconAnimation(isDark);
   }
 
   private applyTheme(isDark: boolean): void {
@@ -61,9 +61,12 @@ export class LoginComponent {
     }
   }
 
-  private triggerLordiconAnimation(): void {
-    this.sunIcon?.play();
-    this.moonIcon?.play();
+  private triggerLordiconAnimation(isDark: boolean): void {
+    if (isDark) {
+      this.moonIcon?.replay();
+    } else {
+      this.sunIcon?.replay();
+    }
   }
 
   protected onSubmit(): void {

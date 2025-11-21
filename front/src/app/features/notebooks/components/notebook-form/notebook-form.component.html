@@ -1,0 +1,176 @@
+<form [formGroup]="notebookForm" (ngSubmit)="onSubmit()" class="space-y-6">
+  @if (error()) {
+    <div role="alert" class="alert alert-error">
+      <span>{{ error() }}</span>
+    </div>
+  }
+
+  <div class="form-control">
+    <label class="label">
+      <span class="label-text font-semibold">Nom du notebook *</span>
+    </label>
+    <input type="text" formControlName="name" placeholder="Mon alternance 2024-2025" class="input input-bordered w-full" />
+    @if (notebookForm.get('name')?.invalid && notebookForm.get('name')?.touched) {
+      <label class="label">
+        <span class="label-text-alt text-error">Le nom est requis (min. 3 caractères)</span>
+      </label>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text font-semibold">Date de début *</span>
+      </label>
+      <input type="date" formControlName="startDate" class="input input-bordered w-full" />
+    </div>
+
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text font-semibold">Date de fin</span>
+      </label>
+      <input type="date" formControlName="endDate" class="input input-bordered w-full" />
+    </div>
+  </div>
+
+  <div class="form-control">
+    <label class="label">
+      <span class="label-text font-semibold">Ou durée en semaines</span>
+    </label>
+    <input type="number" formControlName="durationInWeeks" placeholder="52" class="input input-bordered w-full" />
+  </div>
+
+  <div class="form-control">
+    <label class="label">
+      <span class="label-text font-semibold">Zone scolaire *</span>
+    </label>
+    <select formControlName="locationZone" class="select select-bordered w-full">
+      @for (zone of zones; track zone) {
+        <option [value]="zone">Zone {{ zone }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="form-control">
+    <label class="label">
+      <span class="label-text font-semibold">Pattern hebdomadaire *</span>
+      <span class="label-text-alt">Cliquez sur chaque jour pour changer son type</span>
+    </label>
+    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+      @for (day of weekPattern(); track $index; let i = $index) {
+        <button type="button"
+                class="btn btn-sm {{ getDayTypeColor(day) }}"
+                (click)="toggleDayType(i)">
+          <div class="flex flex-col items-center">
+            <span class="text-xs">{{ dayNames[i] }}</span>
+            <span class="text-lg">{{ getDayTypeLabel(day) }}</span>
+          </div>
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="divider">Configuration avancée (optionnel)</div>
+
+  <div class="collapse collapse-arrow bg-base-200">
+    <input type="checkbox" />
+    <div class="collapse-title font-semibold">
+      Règles spéciales ({{ specialRulesArray.length }})
+    </div>
+    <div class="collapse-content">
+      <div class="space-y-3">
+        @for (rule of specialRulesArray.controls; track $index; let i = $index) {
+          <div [formGroup]="$any(rule)" class="flex gap-2 items-end">
+            <div class="form-control flex-1">
+              <select formControlName="type" class="select select-bordered select-sm">
+                @for (type of specialRuleTypes; track type) {
+                  <option [value]="type">{{ type === 'FULL_SCHOOL' ? '📚 Full École' : '💼 Full Entreprise' }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-control flex-1">
+              <input type="date" formControlName="startDate" class="input input-bordered input-sm" />
+            </div>
+            <button type="button" class="btn btn-sm btn-error" (click)="removeSpecialRule(i)">🗑️</button>
+          </div>
+        }
+        <button type="button" class="btn btn-sm btn-outline" (click)="addSpecialRule()">+ Ajouter une règle</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="collapse collapse-arrow bg-base-200">
+    <input type="checkbox" />
+    <div class="collapse-title font-semibold">
+      Exceptions ({{ overridesArray.length }})
+    </div>
+    <div class="collapse-content">
+      <div class="space-y-3">
+        @for (override of overridesArray.controls; track $index; let i = $index) {
+          <div [formGroup]="$any(override)" class="flex gap-2 items-end">
+            <div class="form-control flex-1">
+              <input type="date" formControlName="date" class="input input-bordered input-sm" />
+            </div>
+            <div class="form-control flex-1">
+              <select formControlName="dayType" class="select select-bordered select-sm">
+                @for (type of dayTypes; track type) {
+                  <option [value]="type">{{ getDayTypeLabel(type) }}</option>
+                }
+              </select>
+            </div>
+            <button type="button" class="btn btn-sm btn-error" (click)="removeOverride(i)">🗑️</button>
+          </div>
+        }
+        <button type="button" class="btn btn-sm btn-outline" (click)="addOverride()">+ Ajouter une exception</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="collapse collapse-arrow bg-base-200">
+    <input type="checkbox" />
+    <div class="collapse-title font-semibold">
+      Périodes spéciales ({{ specialPeriodsArray.length }})
+    </div>
+    <div class="collapse-content">
+      <div class="space-y-3">
+        @for (period of specialPeriodsArray.controls; track $index; let i = $index) {
+          <div [formGroup]="$any(period)" class="space-y-2 p-3 border border-base-300 rounded-lg">
+            <div class="form-control">
+              <input type="text" formControlName="name" placeholder="Nom de la période" class="input input-bordered input-sm" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="form-control">
+                <input type="date" formControlName="startDate" class="input input-bordered input-sm" />
+              </div>
+              <div class="form-control">
+                <input type="date" formControlName="endDate" class="input input-bordered input-sm" />
+              </div>
+            </div>
+            <div class="flex gap-2 items-center">
+              <select formControlName="type" class="select select-bordered select-sm flex-1">
+                @for (type of dayTypes; track type) {
+                  <option [value]="type">{{ getDayTypeLabel(type) }}</option>
+                }
+              </select>
+              <button type="button" class="btn btn-sm btn-error" (click)="removeSpecialPeriod(i)">🗑️</button>
+            </div>
+          </div>
+        }
+        <button type="button" class="btn btn-sm btn-outline" (click)="addSpecialPeriod()">+ Ajouter une période</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-2 pt-4">
+    <button type="button" class="btn btn-ghost" (click)="onCancel()" [disabled]="loading()">
+      Annuler
+    </button>
+    <button type="submit" class="btn btn-primary" [disabled]="loading()">
+      @if (loading()) {
+        <span class="loading loading-spinner loading-sm"></span>
+      }
+      Créer le notebook
+    </button>
+  </div>
+</form>
+

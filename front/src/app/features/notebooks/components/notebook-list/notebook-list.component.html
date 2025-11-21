@@ -1,0 +1,98 @@
+<div class="container mx-auto p-4 md:p-6 lg:p-8">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <h1 class="text-3xl font-bold">Mes Notebooks d'Alternance</h1>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <span class="text-xl">➕</span>
+      Créer un notebook
+    </button>
+  </div>
+
+  @if (error()) {
+    <div role="alert" class="alert alert-error mb-4">
+      <span>{{ error() }}</span>
+      <button class="btn btn-sm btn-ghost" (click)="notebookService.clearError()">✕</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="skeleton h-64 w-full"></div>
+      }
+    </div>
+  } @else {
+    @if (notebooks().length === 0) {
+      <div class="flex flex-col items-center justify-center py-12">
+        <div class="text-6xl mb-4">📓</div>
+        <h2 class="text-2xl font-semibold mb-2">Aucun notebook</h2>
+        <p class="text-base-content/70 mb-4">Créez votre premier notebook d'alternance pour commencer</p>
+        <button class="btn btn-primary" (click)="openCreateModal()">
+          Créer mon premier notebook
+        </button>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (notebook of notebooks(); track notebook.id) {
+          <div class="card bg-base-200 hover:bg-base-300 cursor-pointer transition-all duration-200 shadow-lg"
+               (click)="onSelectNotebook(notebook)"
+               [routerLink]="['/notebooks', notebook.id]">
+            <div class="card-body">
+              <h2 class="card-title">{{ notebook.name }}</h2>
+
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold">📅 Début:</span>
+                  <span>{{ formatDate(notebook.startDate) }}</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold">🏁 Fin:</span>
+                  <span>{{ formatDate(notebook.endDate) }}</span>
+                </div>
+
+                @if (notebook.durationInWeeks) {
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold">⏱️ Durée:</span>
+                    <span>{{ notebook.durationInWeeks }} semaines</span>
+                  </div>
+                }
+
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold">📍 Zone:</span>
+                  <span>{{ notebook.locationZone }}</span>
+                </div>
+
+                <div class="mt-3">
+                  <span class="font-semibold block mb-1">Pattern hebdomadaire:</span>
+                  <div class="text-lg">{{ getWeekPatternDisplay(notebook.weekPatternJson) }}</div>
+                </div>
+              </div>
+
+              <div class="card-actions justify-end mt-4">
+                <div class="badge badge-outline">{{ notebook.specialRules.length }} règles</div>
+                <div class="badge badge-outline">{{ notebook.overrides.length }} exceptions</div>
+                <button class="btn btn-sm btn-error btn-ghost"
+                        (click)="onDeleteNotebook(notebook, $event)">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  @if (showCreateModal()) {
+    <dialog class="modal modal-open">
+      <div class="modal-box max-w-4xl">
+        <h3 class="font-bold text-lg mb-4">Créer un nouveau notebook</h3>
+        <app-notebook-form (closeForm)="closeCreateModal()"></app-notebook-form>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button (click)="closeCreateModal()">close</button>
+      </form>
+    </dialog>
+  }
+</div>
+

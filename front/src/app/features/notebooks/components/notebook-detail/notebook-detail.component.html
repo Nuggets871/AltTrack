@@ -1,0 +1,100 @@
+<div class="container mx-auto p-4 md:p-6 lg:p-8">
+  <div class="flex items-center gap-4 mb-6">
+    <a routerLink="/notebooks" class="btn btn-ghost btn-sm">← Retour</a>
+    <h1 class="text-3xl font-bold">Détails du Notebook</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton h-96 w-full"></div>
+  } @else if (error()) {
+    <div role="alert" class="alert alert-error">
+      <span>{{ error() }}</span>
+    </div>
+  } @else if (notebook()) {
+    <div class="card bg-base-200 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title text-2xl mb-4">{{ notebook()!.name }}</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-3">
+            <h3 class="font-bold text-lg">Informations générales</h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="font-semibold">📅 Date de début:</span>
+                <span>{{ formatDate(notebook()!.startDate) }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-semibold">🏁 Date de fin:</span>
+                <span>{{ formatDate(notebook()!.endDate) }}</span>
+              </div>
+              @if (notebook()!.durationInWeeks) {
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold">⏱️ Durée:</span>
+                  <span>{{ notebook()!.durationInWeeks }} semaines</span>
+                </div>
+              }
+              <div class="flex items-center gap-2">
+                <span class="font-semibold">📍 Zone scolaire:</span>
+                <span>{{ notebook()!.locationZone }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <h3 class="font-bold text-lg">Pattern hebdomadaire</h3>
+            <div class="grid grid-cols-7 gap-1">
+              @for (day of notebook()!.weekPatternJson; track $index; let i = $index) {
+                <div class="text-center p-2 rounded bg-base-300">
+                  <div class="text-xs mb-1">{{ ['L', 'M', 'M', 'J', 'V', 'S', 'D'][i] }}</div>
+                  <div class="text-lg">{{ getDayTypeLabel(day) }}</div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        @if (notebook()!.specialRules.length > 0) {
+          <div class="mt-6">
+            <h3 class="font-bold text-lg mb-3">Règles spéciales</h3>
+            <div class="space-y-2">
+              @for (rule of notebook()!.specialRules; track rule.id) {
+                <div class="alert">
+                  <span>{{ rule.type === 'FULL_SCHOOL' ? '📚' : '💼' }}</span>
+                  <span>{{ rule.type === 'FULL_SCHOOL' ? 'Full École' : 'Full Entreprise' }} à partir du {{ formatDate(rule.startDate) }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (notebook()!.overrides.length > 0) {
+          <div class="mt-6">
+            <h3 class="font-bold text-lg mb-3">Exceptions</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+              @for (override of notebook()!.overrides; track override.id) {
+                <div class="badge badge-lg badge-outline gap-2">
+                  {{ formatDate(override.date) }}: {{ getDayTypeLabel(override.dayType) }}
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (notebook()!.specialPeriods.length > 0) {
+          <div class="mt-6">
+            <h3 class="font-bold text-lg mb-3">Périodes spéciales</h3>
+            <div class="space-y-2">
+              @for (period of notebook()!.specialPeriods; track period.id) {
+                <div class="alert alert-info">
+                  <span>{{ getDayTypeLabel(period.type) }}</span>
+                  <span>{{ period.name }}: du {{ formatDate(period.startDate) }} au {{ formatDate(period.endDate) }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+

@@ -19,6 +19,18 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'notebooks',
+    loadComponent: () =>
+      import('./features/notebooks/components/notebook-list/notebook-list.component').then((m) => m.NotebookListComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'notebooks/:id',
+    loadComponent: () =>
+      import('./features/notebooks/components/notebook-detail/notebook-detail.component').then((m) => m.NotebookDetailComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: '**',
     redirectTo: '',
   },
