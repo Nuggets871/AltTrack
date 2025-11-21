@@ -1,18 +1,22 @@
-import { Component, signal, inject, computed } from '@angular/core';
+import { Component, signal, inject, computed, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { RegisterRequest } from '../../../core/models';
+import { LottieIconComponent } from '@shared/components/lottie-icon';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, LottieIconComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
 export class RegisterComponent {
+  @ViewChild('sunIcon') sunIcon?: LottieIconComponent;
+  @ViewChild('moonIcon') moonIcon?: LottieIconComponent;
+
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
@@ -21,10 +25,46 @@ export class RegisterComponent {
   protected readonly confirmPassword = signal<string>('');
   protected readonly errorMessage = signal<string>('');
   protected readonly isLoading = signal<boolean>(false);
+  protected readonly isDarkMode = signal<boolean>(false);
 
   protected readonly usernameValidation = computed(() => this.computeUsernameValidation());
   protected readonly passwordValidation = computed(() => this.computePasswordValidation());
   protected readonly confirmPasswordValidation = computed(() => this.computeConfirmPasswordValidation());
+
+  constructor() {
+    this.initializeTheme();
+  }
+
+  private initializeTheme(): void {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const isDark = savedTheme === 'dark';
+    this.isDarkMode.set(isDark);
+    this.applyTheme(isDark);
+  }
+
+  protected onThemeChange(event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    const isDark = checkbox.checked;
+    this.isDarkMode.set(isDark);
+    this.applyTheme(isDark);
+    this.triggerLordiconAnimation();
+  }
+
+  private applyTheme(isDark: boolean): void {
+    const htmlElement = document.documentElement;
+    if (isDark) {
+      htmlElement.setAttribute('data-theme', 'valentine2');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      htmlElement.setAttribute('data-theme', 'emerald');
+      localStorage.setItem('theme', 'light');
+    }
+  }
+
+  private triggerLordiconAnimation(): void {
+    this.sunIcon?.play();
+    this.moonIcon?.play();
+  }
 
   protected updateUsername(value: string): void {
     this.username.set(value);

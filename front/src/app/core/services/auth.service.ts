@@ -1,8 +1,9 @@
-﻿import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { User, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '../models';
+import { EnvironmentService } from './environment.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,7 @@ import { User, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } 
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly environmentService = inject(EnvironmentService);
   private readonly apiUrl = 'http://localhost:3000/auth';
   private readonly tokenKey = 'alttrack_access_token';
 
@@ -51,6 +53,7 @@ export class AuthService {
     this.currentUserSignal.set(response.user);
     this.saveTokenToStorage(response.accessToken);
     this.saveUserToStorage(response.user);
+    this.environmentService.updateFromToken(response.accessToken);
   }
 
   private handleAuthenticationError(error: HttpErrorResponse): Observable<never> {
@@ -90,6 +93,7 @@ export class AuthService {
     if (storedToken && storedUser) {
       this.accessTokenSignal.set(storedToken);
       this.currentUserSignal.set(storedUser);
+      this.environmentService.updateFromToken(storedToken);
     }
   }
 
@@ -98,6 +102,7 @@ export class AuthService {
     this.currentUserSignal.set(null);
     this.removeTokenFromStorage();
     this.removeUserFromStorage();
+    this.environmentService.updateFromToken(null);
   }
 
   private saveTokenToStorage(token: string): void {
